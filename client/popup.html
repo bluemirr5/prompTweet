@@ -1,0 +1,59 @@
+<!doctype html>
+<html ng-app="prompTweet">
+<head>
+  <title>PrompTweet</title>
+  <script type="text/javascript" src="./js/angular.min.js"></script>
+  <script type="text/javascript" src="./js/angular-animate.min.js"></script>
+  <script type="text/javascript" src="./js/popup.js"></script>
+   <style>
+    body {
+    min-width:530px;
+    min-height:500px;
+    overflow-x:hidden;
+    }
+    .ng-enter {
+      transition: all linear .2s ;
+      opacity: 0.5;
+      margin-left:-45px;
+    }
+    .ng-enter-active {
+      opacity: 1;
+      margin-left:0;
+    }
+    .ng-leave{
+      transition: .5s linear all; 
+      opacity: 1;
+    }
+    .ng-leave-active{
+      margin-left:145px;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body style="background:#F2F5F6;" ng-controller="TestCtrl">
+  <div align="center">
+    <h3 style="color:#5BB52D;">PrompTweet</h3>
+  </div>
+  <hr/>
+  <hr/>
+  <div>
+    <div align="center">
+      <form>
+        <input type="text" ng-model="message"></input>
+        <button id="sendButton" ng-click="send()">send</button>
+      </form>
+    </div>
+    <div id="cardArea" style="height:380px;">
+      <div style="background:#5BB52D;margin-top:5px" ng-repeat="card in cardList" >
+        <img src="{{card.userIcon}}" width="35px" height="35px"></img><span>루피</span></br>
+        <hr/>
+        <span ng-bind="card.message"></span>
+      </div>
+    </div>
+  </div>
+  <hr/>
+  <div id="tail">
+    made in devGroup
+  </div>
+</body>
+</html>
