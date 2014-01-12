@@ -17,7 +17,7 @@ func putTweet(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal([]byte(bodyString), addedTweetSet)
 	tweetSetList = append(tweetSetList, addedTweetSet)
 	for _, wsFrontTarget := range wsFrontTargetList {
-		wsFrontTarget.Write([]byte("new"))
+		wsFrontTarget.Write([]byte(bodyString))
 	}
 	w.Write([]byte("ok"))
 }
