@@ -15,7 +15,5 @@
   "permissions":[
     "tabs",
     "http://*/*"
-  ],
-  "content_security_policy": ["img-src 'self' data: chrome-extension-resource:;"]
-
+  ]
 }

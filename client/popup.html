@@ -44,10 +44,10 @@
       </form>
     </div>
     <div id="cardArea" style="height:380px;">
-      <div style="background:#5BB52D;margin-top:5px" ng-repeat="card in cardList" >
-        <img src="{{card.userIcon}}" width="35px" height="35px"></img><span>루피</span></br>
+      <div style="background:#5BB52D;margin-top:5px" ng-repeat="tweet in tweetList" >
+        <img ng-src="http://localhost:9090/image/0{{tweet.RandomIconNum}}.png" width="35px" height="35px"></img><span>루피</span></br>
         <hr/>
-        <span ng-bind="card.message"></span>
+        <span ng-bind="tweet.TweetMessage"></span>
       </div>
     </div>
   </div>
