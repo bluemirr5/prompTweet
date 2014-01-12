@@ -12,9 +12,6 @@ const PROTOCOL_TYPE_RESP_FIRST_DATA = "RESP_FIRST_DATA"
 const PROTOCOL_TYPE_REQ_SEND_DATA   = "REQ_SEND_DATA"
 const PROTOCOL_TYPE_RESP_NEW_DATA   = "REQ_NEW_DATA"
 
-const HOST = "localhost"
-const PORT = ":9090"
-
 var iconNames = ["뽀로로","크롱","패티","에디","포비","루피","해리"];
 
 function rand(start, end) {
@@ -58,7 +55,7 @@ function TestCtrl($scope, $http) {
 		var i = rand(0,6)
 		var si = (i+1)+""
 		var card = {RandomIconNum:si, RandomId:iconNames[i], TweetMessage:$scope.message}
-		$scope.tweetList.unshift(card);
+		// $scope.tweetList.unshift(card);
 		sendRemote(JSON.stringify(card));
 		$scope.message = "";
 	}
@@ -69,9 +66,7 @@ function TestCtrl($scope, $http) {
 	var oSocket = new WebSocket("ws://localhost:9090/ws");
 	oSocket.onmessage = function (event) {
 		var parsedLog = JSON.parse(event.data)
-		if(parsedLog.PtcType == PROTOCOL_TYPE_RESP_NEW_DATA) {
-			$scope.cardList.unshift(parsedLog.PtcContents);
-		}
+		$scope.tweetList.unshift(parsedLog);
 		$scope.$apply();
 	}
 	oSocket.onopen = function (e) {
