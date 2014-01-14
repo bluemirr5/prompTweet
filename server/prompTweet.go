@@ -9,6 +9,11 @@ var wsFrontTargetList []*websocket.Conn
 var expireChannel chan int
 var tweetSetList []*tweetSet
 
+const (
+	MAX_TWEET_NUM  = 100
+	PAGE_TWEET_NUM = 10
+)
+
 type tweetSet struct {
 	RandomId      string
 	RandomIconNum string

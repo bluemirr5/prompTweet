@@ -15,6 +15,9 @@ func putTweet(w http.ResponseWriter, r *http.Request) {
 		bodyString = bodyString + byteToString(buf)
 	}
 	json.Unmarshal([]byte(bodyString), addedTweetSet)
+	if len(tweetSetList) >= MAX_TWEET_NUM {
+		tweetSetList = tweetSetList[1:]
+	}
 	tweetSetList = append(tweetSetList, addedTweetSet)
 	for _, wsFrontTarget := range wsFrontTargetList {
 		wsFrontTarget.Write([]byte(bodyString))
@@ -24,8 +27,13 @@ func putTweet(w http.ResponseWriter, r *http.Request) {
 
 func getTweet(w http.ResponseWriter, r *http.Request) {
 	if len(tweetSetList) > 0 {
-		tweetList, _ := json.Marshal(tweetSetList)
-		w.Write(tweetList)
+		if len(tweetSetList) > 10 {
+			tweetList, _ := json.Marshal(tweetSetList[len(tweetSetList)-10 : len(tweetSetList)])
+			w.Write(tweetList)
+		} else {
+			tweetList, _ := json.Marshal(tweetSetList)
+			w.Write(tweetList)
+		}
 	} else {
 		return
 	}

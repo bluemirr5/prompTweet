@@ -1,20 +1,23 @@
-<!doctype html>
+<!DOCTYPE>
 <html ng-app="prompTweet">
-<head>
-  <title>PrompTweet</title>
-  <script type="text/javascript" src="./js/angular.min.js"></script>
-  <script type="text/javascript" src="./js/angular-animate.min.js"></script>
-  <script type="text/javascript" src="./js/popup.js"></script>
-   <style>
+	<head>
+	  <meta charset="utf-8"/>
+	  <title>example</title>
+
+		<script type="text/javascript" src="./js/angular.min.js"></script>
+    <script type="text/javascript" src="./js/angular-animate.min.js"></script>
+    <script type="text/javascript" src="./js/popup.js"></script>
+		<style>
+
     body {
-    min-width:530px;
-    min-height:500px;
-    overflow-x:hidden;
+      min-width:445px;
+      min-height:445px;
+      overflow-x:hidden;
     }
+
     .ng-enter {
       transition: all linear .2s ;
       opacity: 0.5;
-      margin-left:-45px;
     }
     .ng-enter-active {
       opacity: 1;
@@ -25,35 +28,132 @@
       opacity: 1;
     }
     .ng-leave-active{
-      margin-left:145px;
       opacity: 0;
     }
-  </style>
-</head>
-<body style="background:#F2F5F6;" ng-controller="TestCtrl">
-  <div align="center">
-    <h3 style="color:#5BB52D;">PrompTweet</h3>
-  </div>
-  <hr/>
-  <hr/>
-  <div>
-    <div align="center">
-      <form>
-        <input type="text" ng-model="message"></input>
-        <button id="sendButton" ng-click="send()">send</button>
-      </form>
-    </div>
-    <div id="cardArea" style="height:380px;">
-      <div style="background:#5BB52D;margin-top:5px" ng-repeat="tweet in tweetList" >
-        <img ng-src="http://localhost:9090/image/0{{tweet.RandomIconNum}}.png" width="35px" height="35px"></img><span ng-bind="tweet.RandomId"></span></br>
-        <hr/>
-        <span ng-bind="tweet.TweetMessage"></span>
+
+		ul{
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		.tbx		
+		{
+		    color: #979797;
+		    height: 25px;
+		    min-width: 350px;
+		    padding-left: 10px;
+		    text-decoration: none;
+		    background-repeat: repeat-x;
+		    border:1px solid #cccccc;
+		    border-radius:3px
+		}
+
+		.tbx:focus
+		 { 
+		 	border:1px solid #F46C21;
+		 	outline:0;
+		  	box-shadow: 0px 0px 4px #F46C21;
+		 } 
+
+		 .btn{
+		 	height: 25px;
+		 	border:1px solid #F46C21;
+		 	background-color: #F46C21;
+		 	border-radius:3px;
+		 	color:#FFF;
+		 	outline:0;
+		 	padding-left: 10px;
+		 	padding-right: 10px;
+		 	cursor: hand;
+		 }
+
+		 .btn:hover{
+		 	background-color: #ff8c4c;
+		 }
+
+		 .btn:active{
+		 	background-color: #ff5b00;
+		 }
+
+
+		 .div_content{
+		 	margin-top: 20px;
+		 	margin-left: 5px;
+		 	width: 400px;
+		 	word-wrap: break-word;
+
+		 }
+
+		 .thumbnail{
+		 	margin-right: 15px;
+      margin-bottom: 15px;
+		 	border: 2px solid #F46c21;		 	
+		 	width: 60px;
+		 	height: 60px;
+		 	float: left;
+		 }
+
+		 .thumbnail .img{
+		 	
+		 	width: 100%;
+		 	height: 100%
+		 }
+
+		 span{
+		 	font-family: NanumGothic;
+		 	vertical-align: top;	
+
+		 }
+
+		 .id{
+		 	
+		 	font-weight: bold;
+		 	color: #444;
+		 	display: block;		 	
+		 	margin-bottom: 5px;
+		 }
+
+		 .content{
+		 
+		 }
+
+		 hr{
+		 	margin-top: 20px;
+		 	border-style: dashed;
+		 	size:2px;
+		 	width: 100%;
+		 	color:#c0c0c0;
+		 }
+
+		</style>
+	</head>
+
+	<body style="background:#F2F5F6;" ng-controller="TestCtrl">
+	  <div align="center">
+	    <h3 style="color:#5BB52D;">PrompTweet</h3>
+	  </div>
+    <div>
+      <div align="center">
+        <form>
+          <div style="margin-bottom:30px">
+            <input type="text" class="tbx" ng-model="message"></input>
+            <input type="button" class="btn" value="SEND" ng-click="send()"/>
+          </div>
+        </form>
+      </div>
+      <div id="tweetArea" style="height:380px;overflow-y:scroll">
+        <div class="div_content" ng-repeat="tweet in tweetList">
+          <div class="thumbnail">
+            <image class="img" ng-src="http://bluemirr.kr:9090/image/0{{tweet.RandomIconNum}}.png"/>
+          </div>
+          <div>
+            <span class="id" ng-bind="tweet.RandomId"></span>
+            <span class="content" ng-bind="tweet.TweetMessage"></span>
+          </div>
+          <hr>
+        </div>
       </div>
     </div>
-  </div>
-  <hr/>
-  <div id="tail">
-    made in devGroup
-  </div>
-</body>
+	</body>
 </html>

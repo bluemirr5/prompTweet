@@ -7,12 +7,7 @@ var myApp = angular.module('prompTweet',['ngAnimate'])
     }
 ]);
 
-const PROTOCOL_TYPE_REQ_FIRST_DATA  = "REQ_FIRST_DATA"
-const PROTOCOL_TYPE_RESP_FIRST_DATA = "RESP_FIRST_DATA"
-const PROTOCOL_TYPE_REQ_SEND_DATA   = "REQ_SEND_DATA"
-const PROTOCOL_TYPE_RESP_NEW_DATA   = "REQ_NEW_DATA"
-
-var iconNames = ["뽀로로","크롱","패티","에디","포비","루피","해리"];
+var iconNames = ["Pororo","Crong","Petty","Eddy","Poby","Loopy","Harry"];
 
 function rand(start, end) {
     return Math.floor((Math.random() * (end-start+1)) + start);
@@ -22,7 +17,7 @@ function TestCtrl($scope, $http) {
 	$scope.tweetList = [];
 
   	function fetchTweet() {
-		$http({method: 'GET', url: "http://localhost:9090/getTweet"}).
+		$http({method: 'GET', url: "http://bluemirr.kr:9090/getTweet"}).
 	  		success(function(data, status, headers, config) {
 		  		console.log(data);
 	  			for (var i = 0; data != "null" && data != null && i < data.length; i++) {
@@ -41,7 +36,7 @@ function TestCtrl($scope, $http) {
 
   	function sendRemote(tweet) {
   		console.log(tweet)
-  		$http.post("http://localhost:9090/putTweet", tweet).success(function(data, status, headers, config) {
+  		$http.post("http://bluemirr.kr:9090/putTweet", tweet).success(function(data, status, headers, config) {
 		  		console.log(data);
 	  	});
   	}
@@ -63,7 +58,7 @@ function TestCtrl($scope, $http) {
 	$scope.addNew = function() {
 		chrome.browserAction.setBadgeText({text:"N"});
 	}
-	var oSocket = new WebSocket("ws://localhost:9090/ws");
+	var oSocket = new WebSocket("ws://bluemirr.kr:9090/ws");
 	oSocket.onmessage = function (event) {
 		var parsedLog = JSON.parse(event.data)
 		$scope.tweetList.unshift(parsedLog);
