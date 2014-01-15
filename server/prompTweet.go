@@ -18,6 +18,7 @@ type tweetSet struct {
 	RandomId      string
 	RandomIconNum string
 	TweetMessage  string
+	RegisterDate  string
 }
 
 func main() {

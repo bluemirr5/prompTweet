@@ -3,7 +3,10 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 )
+
+const layout = "2006-01-02 PM 3:04"
 
 func putTweet(w http.ResponseWriter, r *http.Request) {
 	addedTweetSet := new(tweetSet)
@@ -15,12 +18,14 @@ func putTweet(w http.ResponseWriter, r *http.Request) {
 		bodyString = bodyString + byteToString(buf)
 	}
 	json.Unmarshal([]byte(bodyString), addedTweetSet)
+	addedTweetSet.RegisterDate = time.Now().Format(layout)
 	if len(tweetSetList) >= MAX_TWEET_NUM {
 		tweetSetList = tweetSetList[1:]
 	}
 	tweetSetList = append(tweetSetList, addedTweetSet)
 	for _, wsFrontTarget := range wsFrontTargetList {
-		wsFrontTarget.Write([]byte(bodyString))
+		data, _ := json.Marshal(addedTweetSet)
+		wsFrontTarget.Write(data)
 	}
 	w.Write([]byte("ok"))
 }

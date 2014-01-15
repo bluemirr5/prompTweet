@@ -3,17 +3,19 @@
   "version":"2.0",
   "manifest_version":2,
   "description":"The extension for prompt tweet",
+  "icons": { "16": "icon.png", "80": "icon.png","128": "icon.png" },
   "browser_action":{
     "default_icon":"icon.png",
     "default_popup":"popup.html"
   },
-  "icons": { "16": "icon.png", "80": "icon.png","128": "icon.png" },
+  "options_page": "options.html",
   "background": {
     "scripts": ["background.js"]
   },
   "omnibox": { "keyword" : "ptw" },	
   "permissions":[
     "tabs",
-    "http://*/*"
+    "http://*/*",
+    "contextMenus"
   ]
 }

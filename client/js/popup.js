@@ -25,6 +25,7 @@ function TestCtrl($scope, $http) {
 		  			temp.RandomId = data[i].RandomId;
 		  			temp.RandomIconNum = data[i].RandomIconNum;
 		  			temp.TweetMessage = data[i].TweetMessage;
+		  			temp.RegisterDate = data[i].RegisterDate;
 		  			console.log(temp);
 	  				$scope.tweetList.unshift(temp);
 	  			};
@@ -37,7 +38,7 @@ function TestCtrl($scope, $http) {
   	function sendRemote(tweet) {
   		console.log(tweet)
   		$http.post("http://bluemirr.kr:9090/putTweet", tweet).success(function(data, status, headers, config) {
-		  		console.log(data);
+	  		console.log(data);
 	  	});
   	}
 
@@ -50,27 +51,23 @@ function TestCtrl($scope, $http) {
 		var i = rand(0,6)
 		var si = (i+1)+""
 		var card = {RandomIconNum:si, RandomId:iconNames[i], TweetMessage:$scope.message}
-		// $scope.tweetList.unshift(card);
 		sendRemote(JSON.stringify(card));
 		$scope.message = "";
 	}
 	
-	$scope.addNew = function() {
-		chrome.browserAction.setBadgeText({text:"N"});
-	}
-	var oSocket = new WebSocket("ws://bluemirr.kr:9090/ws");
-	oSocket.onmessage = function (event) {
-		var parsedLog = JSON.parse(event.data)
-		$scope.tweetList.unshift(parsedLog);
+	fetchTweet();
+	$scope.addTweet = function(tweet) {
+		console.log(tweet)
+		$scope.tweetList.unshift(tweet);
 		$scope.$apply();
-	}
-	oSocket.onopen = function (e) {
-		console.log("Server Connected");
+		chrome.browserAction.setBadgeText({text:""});
 	};
 
-	oSocket.onclose = function (e) {
-		alert("Server Disconnected")
-	};
-	fetchTweet();
+}
+
+function addHiddenMessage(obj) {
+	console.log("addHiddenMessage")
+	angular.element(document.getElementById("body")).scope().addTweet(obj);
+	angular.element(document.getElementById("body")).scope().$apply();
 }
 chrome.browserAction.setBadgeText({text:""});
