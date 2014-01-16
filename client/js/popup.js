@@ -63,6 +63,12 @@ function TestCtrl($scope, $http) {
 		chrome.browserAction.setBadgeText({text:""});
 	};
 
+	$('#messagebox').keypress(function(e){
+		if(e.keyCode == 13){
+			$scope.send();
+		}
+	});
+
 }
 
 function addHiddenMessage(obj) {

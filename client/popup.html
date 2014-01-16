@@ -3,6 +3,7 @@
 	<head>
 	  	<meta charset="utf-8"/>
 	  	<title>example</title>
+		<script type="text/javascript" src="./js/jquery-1.10.1.min.js"></script>
 		<script type="text/javascript" src="./js/angular.min.js"></script>
     	<script type="text/javascript" src="./js/angular-animate.min.js"></script>
     	<script type="text/javascript" src="./js/popup.js"></script>
@@ -141,7 +142,7 @@
       <div align="center">
         <form>
           <div style="margin-bottom:30px">
-            <input type="text" class="tbx" ng-model="message"></input>
+            <input type="text" id="messagebox" class="tbx" ng-model="message"></input>
             <input type="button" class="btn" value="SEND" ng-click="send()"/>
           </div>
         </form>
