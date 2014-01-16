@@ -30,7 +30,9 @@ oSocket.onmessage = function (event) {
         var popup = popups[0];
         popup.addHiddenMessage(tweet);
     } else {
+        // chrome.browserAction.setBadgeBackgroundColor({color:[232,212,102,255]});
         chrome.browserAction.setBadgeText({text:"N"});
+
         chrome.notifications.clear("PrompTweet", function(cleared){
             var opt = {
                 type: "basic",

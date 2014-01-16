@@ -27,6 +27,8 @@ function TestCtrl($scope, $http) {
 		  			temp.TweetMessage = data[i].TweetMessage;
 		  			temp.RegisterDate = data[i].RegisterDate;
 		  			console.log(temp);
+		  			// filter
+					temp = $scope.tweetFilter(temp);
 	  				$scope.tweetList.unshift(temp);
 	  			};
 	  	}).
@@ -57,9 +59,28 @@ function TestCtrl($scope, $http) {
 	
 	fetchTweet();
 	$scope.addTweet = function(tweet) {
+		// filter
+		tweet = $scope.tweetFilter(tweet);
+
 		$scope.tweetList.unshift(tweet);
 		$scope.$apply();
 		chrome.browserAction.setBadgeText({text:""});
+	};
+
+	$scope.tweetFilter = function(tweet) {
+		tweet.Type = "T";
+		var message = tweet.TweetMessage;
+		if(message.substring(0,7) == "http://" || message.substring(0,8) == "https://") {
+			//link
+			tweet.Type = "L"
+			if(message.substring(message.length-5, message.length-1) == ".jpg" || 
+				message.substring(message.length-5, message.length-1) == ".gif") {
+				tweet.Type = "I"
+				//Image
+			}
+		}
+		console.log(tweet)
+		return tweet;
 	};
 
 	$('#messagebox').keypress(function(e){

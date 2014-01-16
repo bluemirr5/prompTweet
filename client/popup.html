@@ -10,8 +10,8 @@
 		<style>
 
 	    body {
-	      min-width:445px;
-	      min-height:445px;
+	      min-width:453px;
+	      min-height:523px;
 	      overflow-x:hidden;
 	    }
 
@@ -110,54 +110,105 @@
 		 	
 		 	font-weight: bold;
 		 	color: #444;
-		 	margin-bottom: 5px;
+		 	
 		 }
 
 		 .date{
-		 	color: #666;
-		 	display: block;
-		 	font-size: 12px;
+		 	font-size: 13px;
+		 	color:#757575;
+		 	margin-left: 10px;
+		 	margin-bottom: 3px;
+		 	vertical-align: bottom;
 		 }
 
 		 .content{
-		 
+			display: block;		 	
+			margin-top: 5px;		 
 		 }
 
-		 hr{
-		 	margin-top: 20px;
-		 	border-style: dashed;
-		 	size:2px;
+
+		 .hr{
+		 	margin-top: 5px;		 			 	
 		 	width: 100%;
-		 	color:#c0c0c0;
+		 	height: 0;
+		 	border-bottom: 1px solid #d1d1d1;
+		 	display: inline-block;
+
 		 }
+
+
+
+		 .title{
+		 	margin-top: 20px;
+		 	margin-bottom: 30px;
+		 }
+
+
+		::-webkit-scrollbar {
+			width: 8px; 
+			height: 8px; 
+			border: 3px solid #fff; 
+		}
+ 		
+ 		::-webkit-scrollbar-button:start:decrement, ::-webkit-scrollbar-button:end:increment {
+ 			display: none; 
+ 			height: 10px;  			
+ 		}
+ 		
+ 		::-webkit-scrollbar-track {
+ 			/*background: #efefef; */
+ 			
+ 			
+ 			
+ 			/*-webkit-border-radius: 0px; */
+ 			border-radius:0px; 
+ 			/*-webkit-box-shadow: inset 0 0 4px rgba(0,0,0,.2)*/
+ 		}
+ 		
+ 		::-webkit-scrollbar-thumb {
+ 			/*height: 50px; */
+ 			/*width: 50px; */
+ 			/*background: rgba(0,0,0,.2); */
+ 			background: #cacac7;
+ 			/*-webkit-border-radius: 15px;*/
+ 			 border-radius: 5px; 
+ 			/*-webkit-box-shadow: inset 0 0 4px rgba(0,0,0,.1)*/
+ 		}
 
 		</style>
 	</head>
 
 	<body style="background:#FFF;" ng-controller="TestCtrl" id="body">
-	  <div align="center">
-	    <h3 style="color:#5BB52D;">PrompTweet</h3>
-	  </div>
-    <div>
-      <div align="center">
-        <form>
-          <div style="margin-bottom:30px">
-            <input type="text" id="messagebox" class="tbx" ng-model="message"></input>
-            <input type="button" class="btn" value="SEND" ng-click="send()"/>
-          </div>
-        </form>
-      </div>
-	<div class="div_content" ng-repeat="tweet in tweetList">
-      <div class="thumbnail">
-        <image class="img" ng-src="http://bluemirr.kr:9090/image/0{{tweet.RandomIconNum}}.png"/>
-      </div>
-      <div>
-        <span class="id" ng-bind="tweet.RandomId"></span>
-        <span class="date" ng-bind="tweet.RegisterDate"></span>
-        <span class="content" ng-bind="tweet.TweetMessage"></span>
-      </div>
-      <hr>
-    </div>
-    </div>
+	  	<div style="margin-left:10px">	
+		  	<div class="top">
+				<image class="title" src="img_title.png"/>
+
+			</div>
+		    
+		    <div>
+		      	<div>
+		        	<form>
+		          		<div style="margin-bottom:30px">
+		            		<input type="text" id="messagebox" class="tbx" ng-model="message"></input>
+		            		<input type="button" class="btn" value="SEND" ng-click="send()"/>
+		          		</div>
+		        	</form>
+		      	</div>
+
+				<div class="div_content" ng-repeat="tweet in tweetList">
+		      		<div class="thumbnail">
+		        		<image class="img" ng-src="http://bluemirr.kr:9090/image/0{{tweet.RandomIconNum}}.png"/>
+		      		</div>
+		      	<div>
+		        
+		        <span class="id" ng-bind="tweet.RandomId"></span>
+		        <span class="date" ng-bind="tweet.RegisterDate"></span>
+		        <span class="content" ng-bind="tweet.TweetMessage"></span>
+		    </div>
+		    
+		    <div class="hr"/>
+	    
+	    </div>
+	    
 	</body>
 </html>
