@@ -25,11 +25,21 @@ oSocket.onmessage = function (event) {
     var popups = chrome.extension.getViews({type: "popup"});
     console.log(popups.length);
     console.log(event.data);
+    var tweet = JSON.parse(event.data)
     if (popups.length != 0) {
         var popup = popups[0];
-        popup.addHiddenMessage(JSON.parse(event.data));
+        popup.addHiddenMessage(tweet);
     } else {
         chrome.browserAction.setBadgeText({text:"N"});
+        chrome.notifications.clear("PrompTweet", function(cleared){
+            var opt = {
+                type: "basic",
+                title: tweet.RandomId+" : "+tweet.RegisterDate,
+                message: tweet.TweetMessage,
+                iconUrl: "http://intranet.prompt.co.kr/new1/images/logo2.gif"
+            }
+            chrome.notifications.create("PrompTweet", opt, function(){});
+        });        
     }
 };
 oSocket.onopen = function (e) {
