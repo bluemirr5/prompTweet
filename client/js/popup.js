@@ -19,14 +19,14 @@ function TestCtrl($scope, $http) {
   	function fetchTweet() {
 		$http({method: 'GET', url: "http://bluemirr.kr:9090/getTweet"}).
 	  		success(function(data, status, headers, config) {
-		  		console.log(data);
+		  		//console.log(data);
 	  			for (var i = 0; data != "null" && data != null && i < data.length; i++) {
 		  			var temp = {};
 		  			temp.RandomId = data[i].RandomId;
 		  			temp.RandomIconNum = data[i].RandomIconNum;
 		  			temp.TweetMessage = data[i].TweetMessage;
 		  			temp.RegisterDate = data[i].RegisterDate;
-		  			console.log(temp);
+		  			// console.log(temp);
 		  			// filter
 					temp = $scope.tweetFilter(temp);
 	  				$scope.tweetList.unshift(temp);
@@ -70,11 +70,16 @@ function TestCtrl($scope, $http) {
 	$scope.tweetFilter = function(tweet) {
 		tweet.Type = "T";
 		var message = tweet.TweetMessage;
-		if(message.substring(0,7) == "http://" || message.substring(0,8) == "https://") {
+		var header1 = message.substring(0,7);
+		var header2 = message.substring(0,8);
+		if(header1 == "http://" || header2 == "https://") {
+			console.log(header1);
+			console.log(header2);
 			//link
-			tweet.Type = "L"
-			if(message.substring(message.length-5, message.length-1) == ".jpg" || 
-				message.substring(message.length-5, message.length-1) == ".gif") {
+			tweet.Type = "L";
+			var tail = message.substring(message.length-4, message.length);
+			console.log(tail);
+			if(tail == ".jpg" || tail == ".gif") {
 				tweet.Type = "I"
 				//Image
 			}

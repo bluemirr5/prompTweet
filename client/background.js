@@ -64,7 +64,20 @@ function createMenuItem(creationObject, onclickHandler) {
     }
     return chrome.contextMenus.create(creationObject);
 }
-createMenuItem({"title": "PrompTweet", "contexts":["selection"]}, searchSelection);
+createMenuItem({"title": "PrompTweet-Selection", "contexts":["selection"]}, searchSelection);
+createMenuItem({"title": "PrompTweet-Image", "contexts":["image"]}, imageSelection);
+createMenuItem({"title": "PrompTweet-Link", "contexts":["link"]}, linkSelection);
+function searchSelection(info, tab, creationData) {
+    send(info.selectionText);
+}
+function imageSelection(info, tab, creationData) {
+    console.log(info.srcUrl);
+    send(info.srcUrl);
+}
+function linkSelection(info, tab, creationData) {
+    console.log(info.linkUrl);
+    send(info.linkUrl);
+}
 
 //============================================
 //
@@ -74,9 +87,6 @@ createMenuItem({"title": "PrompTweet", "contexts":["selection"]}, searchSelectio
 var iconNames = ["Pororo","Crong","Petty","Eddy","Poby","Loopy","Harry"];
 function rand(start, end) {
     return Math.floor((Math.random() * (end-start+1)) + start);
-}
-function searchSelection(info, tab, creationData) {
-    send(info.selectionText)
 }
 function sendRemote(tweet) {
     console.log(tweet)
