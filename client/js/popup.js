@@ -70,22 +70,25 @@ function TestCtrl($scope, $http) {
 	$scope.tweetFilter = function(tweet) {
 		tweet.Type = "T";
 		var message = tweet.TweetMessage;
-		var header1 = message.substring(0,7);
-		var header2 = message.substring(0,8);
+		var header1 = message.substring(0,7).toLowerCase();
+		var header2 = message.substring(0,8).toLowerCase();
+		var header3 = message.substring(0,16).toLowerCase();
 		if(header1 == "http://" || header2 == "https://") {
-			console.log(header1);
-			console.log(header2);
 			//link
 			tweet.Type = "L";
-			var tail = message.substring(message.length-4, message.length);
-			console.log(tail);
-			if(tail == ".jpg" || tail == ".gif") {
+			var tail = message.substring(message.length-4, message.length).toLowerCase();
+			if(tail == ".jpg" || tail == ".gif" || tail == ".png") {
 				tweet.Type = "I"
 				//Image
 			}
+		} else if(header3 == "data:image/jpeg;") {
+			tweet.Type = "I"
 		}
-		console.log(tweet)
 		return tweet;
+	};
+
+	$scope.link = function(purl) {
+		chrome.tabs.create( { url: purl} );
 	};
 
 	$('#messagebox').keypress(function(e){

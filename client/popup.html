@@ -205,6 +205,7 @@
 				        <!-- <div ng-switch-on="tweet.Type"> -->
 					    <span class="content" ng-if="tweet.Type=='T'" ng-bind="tweet.TweetMessage"></span>
 					    <img class="content" ng-if="tweet.Type=='I'" ng-src="{{tweet.TweetMessage}}"></img>
+					    <a class="content" ng-if="tweet.Type=='L'" ng-href="{{tweet.TweetMessage}}" ng-bind="tweet.TweetMessage" ng-click="link(tweet.TweetMessage)"></a>
 					    <!-- </div> -->
 		    		</div>
 		    		<div class="hr"/>
