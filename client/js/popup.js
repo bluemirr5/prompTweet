@@ -57,7 +57,6 @@ function TestCtrl($scope, $http) {
 	
 	fetchTweet();
 	$scope.addTweet = function(tweet) {
-		console.log(tweet)
 		$scope.tweetList.unshift(tweet);
 		$scope.$apply();
 		chrome.browserAction.setBadgeText({text:""});
