@@ -1,14 +1,16 @@
-<html>
+<html ng-app>
 <head>
-<script type="text/javascript">
-	
-</script>
+	<script type="text/javascript" src="./js/options.js"></script>
+	<script type="text/javascript" src="./js/jquery-1.10.1.min.js"></script>
+	<script type="text/javascript" src="./js/angular.min.js"></script>
+	<script type="text/javascript" src="./js/angular-animate.min.js"></script>
 </head>
-<body>
-<ul>
-	<li>MY.Kim</li>
-	<li>GS.Won</li>
-	<li>EY.Jo</li>
-</ul>
+<body ng-controller="OptionCtrl">
+	<span ng-bind="channel"></span>
+	<ul>
+		<li>MY.Kim</li>
+		<li>GS.Won</li>
+		<li>EY.Jo</li>
+	</ul>
 </body>
 </html>

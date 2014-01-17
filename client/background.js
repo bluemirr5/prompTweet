@@ -12,6 +12,9 @@ chrome.omnibox.onInputEntered.addListener(
     function(text) {
         alert(text);
         console.log('inputEntered: ' + text);
+        chrome.storage.sync.set({'channel': text}, function() {
+            console.log("saveChannel")
+        });
     }
 );
 

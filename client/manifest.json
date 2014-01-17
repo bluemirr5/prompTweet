@@ -17,6 +17,7 @@
     "tabs",
     "http://*/*",
     "contextMenus",
-    "notifications"
+    "notifications",
+    "storage"
   ]
 }
