@@ -34,13 +34,26 @@ oSocket.onmessage = function (event) {
         chrome.browserAction.setBadgeText({text:"N"});
 
         chrome.notifications.clear("PrompTweet", function(cleared){
+            var tweetType = getTweetType(tweet.TweetMessage);
+            var notyType = "basic";
+            var callback = function(){};
+            if(tweetType == "I") {
+                notyType = "image"
+            }
             var opt = {
-                type: "basic",
+                type: notyType,
                 title: tweet.RandomId+" : "+tweet.RegisterDate,
                 message: tweet.TweetMessage,
-                iconUrl: "http://intranet.prompt.co.kr/new1/images/logo2.gif"
+                iconUrl: "/icon.png"
             }
-            chrome.notifications.create("PrompTweet", opt, function(){});
+            if(tweetType == "I") {
+                opt.imageUrl = tweet.TweetMessage;
+            }
+            console.log(opt);
+            chrome.notifications.onClicked.addListener(function(notificationId){
+                chrome.notifications.clear("PrompTweet", function(b){});
+            });
+            chrome.notifications.create("PrompTweet", opt, callback);
         });        
     }
 };
@@ -64,7 +77,16 @@ function createMenuItem(creationObject, onclickHandler) {
     }
     return chrome.contextMenus.create(creationObject);
 }
-createMenuItem({"title": "PrompTweet", "contexts":["selection"]}, searchSelection);
+createMenuItem({"title": "PrompTweet", "contexts":["selection", "image", "link"]}, contextAction);
+function contextAction(info, tab, creationData) {
+    if(info.selectionText != undefined && info.selectionText != null) {
+        send(info.selectionText);
+    } else if(info.srcUrl != undefined && info.srcUrl != null) {
+        send(info.srcUrl);
+    } else if(info.linkUrl != undefined && info.linkUrl != null) {
+        send(info.linkUrl);
+    }
+}
 
 //============================================
 //
@@ -74,9 +96,6 @@ createMenuItem({"title": "PrompTweet", "contexts":["selection"]}, searchSelectio
 var iconNames = ["Pororo","Crong","Petty","Eddy","Poby","Loopy","Harry"];
 function rand(start, end) {
     return Math.floor((Math.random() * (end-start+1)) + start);
-}
-function searchSelection(info, tab, creationData) {
-    send(info.selectionText)
 }
 function sendRemote(tweet) {
     console.log(tweet)
@@ -109,4 +128,23 @@ function send(message) {
     var si = (i+1)+""
     var card = {RandomIconNum:si, RandomId:iconNames[i], TweetMessage:message}
     sendRemote(JSON.stringify(card));
+}
+
+function getTweetType(message) {
+    var retType = "T";
+    var header1 = message.substring(0,7).toLowerCase();
+    var header2 = message.substring(0,8).toLowerCase();
+    var header3 = message.substring(0,16).toLowerCase();
+    if(header1 == "http://" || header2 == "https://") {
+        //link
+        retType = "L";
+        var tail = message.substring(message.length-4, message.length).toLowerCase();
+        if(tail == ".jpg" || tail == ".gif" || tail == ".png") {
+            retType = "I"
+            //Image
+        }
+    } else if(header3 == "data:image/jpeg;") {
+        retType = "I"
+    }
+    return retType;
 }
