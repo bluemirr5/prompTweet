@@ -16,10 +16,19 @@ function rand(start, end) {
 function TestCtrl($scope, $http) {
 	$scope.tweetList = [];
 
+	// get Channel & 
+	chrome.storage.sync.get("channel", function(item) {
+		if(item.channel == undefined || item.channel == null) {
+			item.channel = "";	
+		}
+		$scope.channel = item.channel;
+		fetchTweet();
+	});
+
+	// when page has loaded get Tweet from Server
   	function fetchTweet() {
-		$http({method: 'GET', url: "http://bluemirr.kr:9090/getTweet"}).
+		$http({method: 'GET', url: "http://localhost:9090/getTweet", params:{channel:$scope.channel}}).
 	  		success(function(data, status, headers, config) {
-		  		//console.log(data);
 	  			for (var i = 0; data != "null" && data != null && i < data.length; i++) {
 		  			var temp = {};
 		  			temp.RandomId = data[i].RandomId;
@@ -37,13 +46,15 @@ function TestCtrl($scope, $http) {
 	  	});
   	}
 
+  	// send Tweet to Server
   	function sendRemote(tweet) {
   		console.log(tweet)
-  		$http.post("http://bluemirr.kr:9090/putTweet", tweet).success(function(data, status, headers, config) {
+  		$http.post("http://localhost:9090/putTweet", tweet).success(function(data, status, headers, config) {
 	  		console.log(data);
 	  	});
   	}
 
+  	// make Tweet for sending Server
 	$scope.send = function() {
 		var message = $scope.message;
 		if(message == null || message == "") {
@@ -57,7 +68,7 @@ function TestCtrl($scope, $http) {
 		$scope.message = "";
 	}
 	
-	fetchTweet();
+	// when client recieve Tweet, add and display Tweet
 	$scope.addTweet = function(tweet) {
 		// filter
 		tweet = $scope.tweetFilter(tweet);
@@ -67,6 +78,7 @@ function TestCtrl($scope, $http) {
 		chrome.browserAction.setBadgeText({text:""});
 	};
 
+	// classify Tweet Type : Text, Image, Link
 	$scope.tweetFilter = function(tweet) {
 		tweet.Type = "T";
 		var message = tweet.TweetMessage;
@@ -87,10 +99,12 @@ function TestCtrl($scope, $http) {
 		return tweet;
 	};
 
+	// goto link
 	$scope.link = function(purl) {
 		chrome.tabs.create( { url: purl} );
 	};
 
+	// view operation
 	$('#messagebox').keypress(function(e){
 		if(e.keyCode == 13){
 			$scope.send();
@@ -99,6 +113,7 @@ function TestCtrl($scope, $http) {
 
 }
 
+// call from background.js
 function addHiddenMessage(obj) {
 	console.log("addHiddenMessage")
 	angular.element(document.getElementById("body")).scope().addTweet(obj);

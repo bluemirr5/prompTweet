@@ -3,6 +3,7 @@
 //  OmniBox
 //
 //============================================
+var gchannel;
 chrome.omnibox.onInputChanged.addListener(
     function(text, suggest) {
         console.log('inputChanged: ' + text);
@@ -13,51 +14,36 @@ chrome.omnibox.onInputEntered.addListener(
         alert(text);
         console.log('inputEntered: ' + text);
         chrome.storage.sync.set({'channel': text}, function() {
-            console.log("saveChannel")
+            gchannel = text;
+            console.log("saveChannel");
         });
     }
 );
+chrome.storage.sync.get("channel", function(item) {
+    if(item.channel == undefined || item.channel == null) {
+        item.channel = "";  
+    }
+    gchannel = item.channel;
+});
 
 //============================================
 //
 //  Notify From WebSocket
 //
 //============================================
-var oSocket = new WebSocket("ws://bluemirr.kr:9090/ws");
+var oSocket = new WebSocket("ws://localhost:9090/ws");
 oSocket.onmessage = function (event) {
-    var popups = chrome.extension.getViews({type: "popup"});
-    console.log(popups.length);
-    console.log(event.data);
     var tweet = JSON.parse(event.data)
-    if (popups.length != 0) {
-        var popup = popups[0];
-        popup.addHiddenMessage(tweet);
-    } else {
-        // chrome.browserAction.setBadgeBackgroundColor({color:[232,212,102,255]});
-        chrome.browserAction.setBadgeText({text:"N"});
-
-        chrome.notifications.clear("PrompTweet", function(cleared){
-            var tweetType = getTweetType(tweet.TweetMessage);
-            var notyType = "basic";
-            var callback = function(){};
-            if(tweetType == "I") {
-                notyType = "image"
-            }
-            var opt = {
-                type: notyType,
-                title: tweet.RandomId+" : "+tweet.RegisterDate,
-                message: tweet.TweetMessage,
-                iconUrl: "/icon.png"
-            }
-            if(tweetType == "I") {
-                opt.imageUrl = tweet.TweetMessage;
-            }
-            console.log(opt);
-            chrome.notifications.onClicked.addListener(function(notificationId){
-                chrome.notifications.clear("PrompTweet", function(b){});
-            });
-            chrome.notifications.create("PrompTweet", opt, callback);
-        });        
+    if(checkAvailableTweet(tweet)) {
+        var popups = chrome.extension.getViews({type: "popup"});
+        if (popups.length != 0) {
+            var popup = popups[0];
+            popup.addHiddenMessage(tweet);
+        } else {
+            // chrome.browserAction.setBadgeBackgroundColor({color:[232,212,102,255]});
+            chrome.browserAction.setBadgeText({text:"N"});
+            makeNotification(tweet);
+        }
     }
 };
 oSocket.onopen = function (e) {
@@ -66,6 +52,45 @@ oSocket.onopen = function (e) {
 oSocket.onclose = function (e) {
     alert("Server Disconnected")
 };
+function checkAvailableTweet(tweet) {
+    var ret = false;
+    var message = tweet.TweetMessage;
+    var firstStr = message.substring(0, 1);
+    var etcStr = message.substring(1, message.length-1);
+    var parsedMessage = etcStr.split("#");
+    if (firstStr == "#") {
+        if (parsedMessage.length == 2 && parsedMessage[0] == gchannel) {
+            ret = true;
+        }
+    } else {
+        ret = true;
+    }
+    return ret;
+}
+function makeNotification(tweet) {
+    chrome.notifications.clear("PrompTweet", function(cleared){
+        var tweetType = getTweetType(tweet.TweetMessage);
+        var notyType = "basic";
+        var callback = function(){};
+        if(tweetType == "I") {
+            notyType = "image"
+        }
+        var opt = {
+            type: notyType,
+            title: tweet.RandomId+" : "+tweet.RegisterDate,
+            message: tweet.TweetMessage,
+            iconUrl: "/icon.png"
+        }
+        if(tweetType == "I") {
+            opt.imageUrl = tweet.TweetMessage;
+        }
+        console.log(opt);
+        chrome.notifications.onClicked.addListener(function(notificationId){
+            chrome.notifications.clear("PrompTweet", function(b){});
+        });
+        chrome.notifications.create("PrompTweet", opt, callback);
+    });        
+}
 
 //============================================
 //
@@ -118,7 +143,7 @@ function sendRemote(tweet) {
         {
         }
     }
-    xmlhttp.open("POST","http://bluemirr.kr:9090/putTweet",true);
+    xmlhttp.open("POST","http://localhost:9090/putTweet",true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.send(tweet);
 }
