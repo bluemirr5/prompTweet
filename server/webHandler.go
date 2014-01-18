@@ -44,6 +44,7 @@ func getTweet(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		return
+	}
 }
 
 func getTargetTweet(channel string) []*tweetSet {
@@ -68,6 +69,7 @@ func byteToString(c []byte) string {
 	n := -1
 	for i, b := range c {
 		if b == 0 {
+		}
 			break
 		}
 		n = i
