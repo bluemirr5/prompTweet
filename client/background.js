@@ -36,10 +36,7 @@ function setWebSocketClient() {
     oSocket = new WebSocket("ws://bluemirr.kr:9090/ws");
     oSocket.onmessage = function (event) {
         var tweet = JSON.parse(event.data)
-        var destTweet = channelFilterTweet(tweet);
-        console.log(destTweet);
-        console.log(tweet);
-        if(destTweet != null) {
+        if(checkFilterTweet(tweet)) {
             var popups = chrome.extension.getViews({type: "popup"});
             if (popups.length != 0) {
                 var popup = popups[0];
@@ -47,7 +44,7 @@ function setWebSocketClient() {
             } else {
                 // chrome.browserAction.setBadgeBackgroundColor({color:[232,212,102,255]});
                 chrome.browserAction.setBadgeText({text:"N"});
-                makeNotification(destTweet);
+                makeNotification(Tweet);
             }
         }
     };
@@ -63,26 +60,20 @@ function setWebSocketClient() {
     };
 } 
 setWebSocketClient();
-function channelFilterTweet(tweet) {
-    var channel = null;
+function checkFilterTweet(tweet) {
+    var ret = false;
     var message = tweet.TweetMessage;
     var firstStr = message.substring(0, 1);
-    var etcStr = message.substring(1, message.length-1);
+    var etcStr = message.substring(1, message.length);
     var parsedMessage = etcStr.split("#");
     if (firstStr == "#") {
         if (parsedMessage.length == 2 && parsedMessage[0] == gchannel) {
-            tweet.TweetMessage = parsedMessage[1];
-            channel = gchannel;
+            ret = true;
         }
     } else {
-        channel = "Common";
+        ret = true;
     }
-    if(channel != null) {
-        tweet.channel = channel
-        return tweet;
-    } else {
-        return null;
-    }
+    return ret;
 }
 function makeNotification(tweet) {
     chrome.notifications.clear("PrompTweet", function(cleared){
@@ -122,15 +113,29 @@ function createMenuItem(creationObject, onclickHandler) {
     }
     return chrome.contextMenus.create(creationObject);
 }
-createMenuItem({"title": "PrompTweet", "contexts":["selection", "image", "link"]}, contextAction);
-function contextAction(info, tab, creationData) {
+createMenuItem({"title": "Send Common Channel", "contexts":["selection", "image", "link"]}, contextCommonAction);
+createMenuItem({"title": "Send private Channel", "contexts":["selection", "image", "link"]}, contextPrivateAction);
+function contextCommonAction(info, tab, creationData) {
+    var message;
     if(info.selectionText != undefined && info.selectionText != null) {
-        send(info.selectionText);
+        message = info.selectionText;
     } else if(info.srcUrl != undefined && info.srcUrl != null) {
-        send(info.srcUrl);
+        message = info.srcUrl;
     } else if(info.linkUrl != undefined && info.linkUrl != null) {
-        send(info.linkUrl);
+        message = info.linkUrl;
     }
+    send(message);
+}
+function contextPrivateAction(info, tab, creationData) {
+    var message;
+    if(info.selectionText != undefined && info.selectionText != null) {
+        message = info.selectionText;
+    } else if(info.srcUrl != undefined && info.srcUrl != null) {
+        message = info.srcUrl;
+    } else if(info.linkUrl != undefined && info.linkUrl != null) {
+        message = info.linkUrl;
+    }
+    send("#"+gchannel+"#"+message);
 }
 
 //============================================

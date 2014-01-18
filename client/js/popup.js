@@ -118,7 +118,7 @@ function TestCtrl($scope, $http) {
 	    var channel = null;
 	    var message = tweet.TweetMessage;
 	    var firstStr = message.substring(0, 1);
-	    var etcStr = message.substring(1, message.length-1);
+	    var etcStr = message.substring(1, message.length);
 	    var parsedMessage = etcStr.split("#");
 	    if (firstStr == "#") {
 	        if (parsedMessage.length == 2 && parsedMessage[0] == $scope.channel) {
@@ -129,7 +129,7 @@ function TestCtrl($scope, $http) {
 	        channel = "Common";
 	    }
 	    if(channel != null) {
-	        tweet.channel = channel
+	        tweet.Channel = channel
 	        return tweet;
 	    } else {
 	        return null;
