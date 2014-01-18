@@ -31,27 +31,37 @@ chrome.storage.sync.get("channel", function(item) {
 //  Notify From WebSocket
 //
 //============================================
-var oSocket = new WebSocket("ws://localhost:9090/ws");
-oSocket.onmessage = function (event) {
-    var tweet = JSON.parse(event.data)
-    if(checkAvailableTweet(tweet)) {
-        var popups = chrome.extension.getViews({type: "popup"});
-        if (popups.length != 0) {
-            var popup = popups[0];
-            popup.addHiddenMessage(tweet);
-        } else {
-            // chrome.browserAction.setBadgeBackgroundColor({color:[232,212,102,255]});
-            chrome.browserAction.setBadgeText({text:"N"});
-            makeNotification(tweet);
+var oSocket;
+var connectionRun;
+function setWebSocketClient() {
+    oSocket = new WebSocket("ws://bluemirr.kr:9090/ws");
+    oSocket.onmessage = function (event) {
+        var tweet = JSON.parse(event.data)
+        if(checkAvailableTweet(tweet)) {
+            var popups = chrome.extension.getViews({type: "popup"});
+            if (popups.length != 0) {
+                var popup = popups[0];
+                popup.addHiddenMessage(tweet);
+            } else {
+                // chrome.browserAction.setBadgeBackgroundColor({color:[232,212,102,255]});
+                chrome.browserAction.setBadgeText({text:"N"});
+                makeNotification(tweet);
+            }
         }
-    }
-};
-oSocket.onopen = function (e) {
-    console.log("Server Connected");
-};
-oSocket.onclose = function (e) {
-    alert("Server Disconnected")
-};
+    };
+    oSocket.onopen = function (e) {
+        console.log("Server Connected");
+        if(connectionRun != null) {
+            clearInterval(connectionRun);
+        }
+    };
+    oSocket.onclose = function (e) {
+        console.log("Server Disconnected")
+        connectionRun = setInterval("setWebSocketClient()", 1000);
+
+    };
+} 
+setWebSocketClient();
 function checkAvailableTweet(tweet) {
     var ret = false;
     var message = tweet.TweetMessage;
@@ -143,7 +153,7 @@ function sendRemote(tweet) {
         {
         }
     }
-    xmlhttp.open("POST","http://localhost:9090/putTweet",true);
+    xmlhttp.open("POST","http://bluemirr.kr:9090/putTweet",true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.send(tweet);
 }
