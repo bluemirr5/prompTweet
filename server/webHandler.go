@@ -17,6 +17,7 @@ func putTweet(w http.ResponseWriter, r *http.Request) {
 		buf := make([]byte, 1024)
 		n, _ = r.Body.Read(buf)
 		bodyString = bodyString + byteToString(buf)
+		println(bodyString)
 	}
 	json.Unmarshal([]byte(bodyString), addedTweetSet)
 	addedTweetSet.RegisterDate = time.Now().Format(layout)

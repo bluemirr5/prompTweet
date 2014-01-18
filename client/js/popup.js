@@ -37,7 +37,8 @@ function TestCtrl($scope, $http) {
 		  			temp.RegisterDate = data[i].RegisterDate;
 		  			// console.log(temp);
 		  			// filter
-					temp = $scope.tweetFilter(temp);
+		  			temp = channelFilterTweet(temp)
+					temp = tweetTypeFilter(temp);
 	  				$scope.tweetList.unshift(temp);
 	  			};
 	  	}).
@@ -70,8 +71,10 @@ function TestCtrl($scope, $http) {
 	
 	// when client recieve Tweet, add and display Tweet
 	$scope.addTweet = function(tweet) {
+		console.log(tweet);
+		tweet = channelFilterTweet(tweet)
 		// filter
-		tweet = $scope.tweetFilter(tweet);
+		tweet = tweetTypeFilter(tweet);
 
 		$scope.tweetList.unshift(tweet);
 		$scope.$apply();
@@ -79,7 +82,7 @@ function TestCtrl($scope, $http) {
 	};
 
 	// classify Tweet Type : Text, Image, Link
-	$scope.tweetFilter = function(tweet) {
+	function tweetTypeFilter(tweet) {
 		tweet.Type = "T";
 		var message = tweet.TweetMessage;
 		var header1 = message.substring(0,7).toLowerCase();
@@ -110,6 +113,28 @@ function TestCtrl($scope, $http) {
 			$scope.send();
 		}
 	});
+
+	function channelFilterTweet(tweet) {
+	    var channel = null;
+	    var message = tweet.TweetMessage;
+	    var firstStr = message.substring(0, 1);
+	    var etcStr = message.substring(1, message.length-1);
+	    var parsedMessage = etcStr.split("#");
+	    if (firstStr == "#") {
+	        if (parsedMessage.length == 2 && parsedMessage[0] == $scope.channel) {
+	            tweet.TweetMessage = parsedMessage[1];
+	            channel = $scope.channel;
+	        }
+	    } else {
+	        channel = "Common";
+	    }
+	    if(channel != null) {
+	        tweet.channel = channel
+	        return tweet;
+	    } else {
+	        return null;
+	    }
+	}
 
 }
 

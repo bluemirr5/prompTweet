@@ -32,12 +32,14 @@ chrome.storage.sync.get("channel", function(item) {
 //
 //============================================
 var oSocket;
-var connectionRun;
 function setWebSocketClient() {
     oSocket = new WebSocket("ws://bluemirr.kr:9090/ws");
     oSocket.onmessage = function (event) {
         var tweet = JSON.parse(event.data)
-        if(checkAvailableTweet(tweet)) {
+        var destTweet = channelFilterTweet(tweet);
+        console.log(destTweet);
+        console.log(tweet);
+        if(destTweet != null) {
             var popups = chrome.extension.getViews({type: "popup"});
             if (popups.length != 0) {
                 var popup = popups[0];
@@ -45,37 +47,42 @@ function setWebSocketClient() {
             } else {
                 // chrome.browserAction.setBadgeBackgroundColor({color:[232,212,102,255]});
                 chrome.browserAction.setBadgeText({text:"N"});
-                makeNotification(tweet);
+                makeNotification(destTweet);
             }
         }
     };
     oSocket.onopen = function (e) {
         console.log("Server Connected");
-        if(connectionRun != null) {
-            clearInterval(connectionRun);
-        }
     };
     oSocket.onclose = function (e) {
         console.log("Server Disconnected")
-        connectionRun = setInterval("setWebSocketClient()", 1000);
-
+        var r=confirm("PrompTweet Server is disconnected.\n Connect again?");
+        if(r) {
+            setWebSocketClient();
+        }
     };
 } 
 setWebSocketClient();
-function checkAvailableTweet(tweet) {
-    var ret = false;
+function channelFilterTweet(tweet) {
+    var channel = null;
     var message = tweet.TweetMessage;
     var firstStr = message.substring(0, 1);
     var etcStr = message.substring(1, message.length-1);
     var parsedMessage = etcStr.split("#");
     if (firstStr == "#") {
         if (parsedMessage.length == 2 && parsedMessage[0] == gchannel) {
-            ret = true;
+            tweet.TweetMessage = parsedMessage[1];
+            channel = gchannel;
         }
     } else {
-        ret = true;
+        channel = "Common";
     }
-    return ret;
+    if(channel != null) {
+        tweet.channel = channel
+        return tweet;
+    } else {
+        return null;
+    }
 }
 function makeNotification(tweet) {
     chrome.notifications.clear("PrompTweet", function(cleared){
