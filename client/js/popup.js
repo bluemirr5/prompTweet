@@ -14,6 +14,12 @@ function rand(start, end) {
 }
 
 function TestCtrl($scope, $http) {
+	
+	$('.sortable_area').sortable({
+                axis: "y",
+                opacity: 0.5
+            });	
+
 	$scope.tweetList = [];
 
 	// get Channel & 

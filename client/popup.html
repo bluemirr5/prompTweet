@@ -4,6 +4,7 @@
 	  	<meta charset="utf-8"/>
 	  	<title>example</title>
 		<script type="text/javascript" src="./js/jquery-1.10.1.min.js"></script>
+		<script type="text/javascript" src="./js/jquery-ui-1.10.4.custom.min.js"></script>
 		<script type="text/javascript" src="./js/angular.min.js"></script>
     	<script type="text/javascript" src="./js/angular-animate.min.js"></script>
     	<script type="text/javascript" src="./js/popup.js"></script>
@@ -177,7 +178,7 @@
 
 		</style>
 	</head>
-
+	
 	<body style="background:#FFF;" ng-controller="TestCtrl" id="body">
 	  	<div style="margin-left:10px">	
 		  	<div class="top">
@@ -195,22 +196,24 @@
 		        	</form>
 		      	</div>
 
-				<div class="div_content" ng-repeat="tweet in tweetList">
-		      		<div class="thumbnail">
-		        		<image class="img" ng-src="http://promptweet.prompt.co.kr:9090/image/0{{tweet.RandomIconNum}}.png"/>
-		      		</div>
-		      		<div>
-				        <span class="id" ng-bind="tweet.RandomId"></span>
-				        <span class="date" ng-bind="tweet.RegisterDate"></span>
-				        <span class="date" ng-bind="tweet.Channel"></span>
-				        <!-- <div ng-switch-on="tweet.Type"> -->
-					    <pre><span class="content" ng-if="tweet.Type=='T'" ng-bind="tweet.TweetMessage"></span></pre>
-					    <img class="content" ng-if="tweet.Type=='I'" ng-src="{{tweet.TweetMessage}}"></img>
-					    <a class="content" ng-if="tweet.Type=='L'" ng-href="{{tweet.TweetMessage}}" ng-bind="tweet.TweetMessage" ng-click="link(tweet.TweetMessage)"></a>
-					    <!-- </div> -->
-		    		</div>
-		    		<div class="hr"/>
-	   			 </div>
+				<div class="sortable_area">
+					<div class="div_content" ng-repeat="tweet in tweetList">
+						 <div class="thumbnail">
+							<image class="img" ng-src="http://promptweet.prompt.co.kr:9090/image/0{{tweet.RandomIconNum}}.png"/>
+						</div>
+						<div>
+							<span class="id" ng-bind="tweet.RandomId"></span>
+							<span class="date" ng-bind="tweet.RegisterDate"></span>
+							<span class="date" ng-bind="tweet.Channel"></span>
+							<!-- <div ng-switch-on="tweet.Type"> -->
+							<pre><span class="content" ng-if="tweet.Type=='T'" ng-bind="tweet.TweetMessage"></span></pre>
+							<img class="content" ng-if="tweet.Type=='I'" ng-src="{{tweet.TweetMessage}}"></img>
+							<a class="content" ng-if="tweet.Type=='L'" ng-href="{{tweet.TweetMessage}}" ng-bind="tweet.TweetMessage" ng-click="link(tweet.TweetMessage)"></a>
+							<!-- </div> -->
+						</div>
+						<div class="hr"/>
+					</div>
+				 </div>
 	   		</div>
 	   	</div>
 	</body>
