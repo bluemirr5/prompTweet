@@ -49,7 +49,7 @@ function TestCtrl($scope, $http) {
 
   	// send Tweet to Server
   	function sendRemote(tweet) {
-  		console.log(tweet)
+		console.log(tweet)
   		$http.post("http://promptweet.prompt.co.kr:9090/putTweet", tweet).success(function(data, status, headers, config) {
 	  		console.log(data);
 	  	});

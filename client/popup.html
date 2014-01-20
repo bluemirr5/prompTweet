@@ -189,7 +189,7 @@
 		      	<div>
 		        	<form>
 		          		<div style="margin-bottom:30px">
-		            		<input type="text" id="messagebox" class="tbx" ng-model="message"></input>
+		            		<input type="text" id="messagebox" class="tbx" ng-model="message" trim="true"></input>
 		            		<input type="button" class="btn" value="SEND" ng-click="send()"/>
 		          		</div>
 		        	</form>
@@ -204,7 +204,7 @@
 				        <span class="date" ng-bind="tweet.RegisterDate"></span>
 				        <span class="date" ng-bind="tweet.Channel"></span>
 				        <!-- <div ng-switch-on="tweet.Type"> -->
-					    <span class="content" ng-if="tweet.Type=='T'" ng-bind="tweet.TweetMessage"></span>
+					    <pre><span class="content" ng-if="tweet.Type=='T'" ng-bind="tweet.TweetMessage"></span></pre>
 					    <img class="content" ng-if="tweet.Type=='I'" ng-src="{{tweet.TweetMessage}}"></img>
 					    <a class="content" ng-if="tweet.Type=='L'" ng-href="{{tweet.TweetMessage}}" ng-bind="tweet.TweetMessage" ng-click="link(tweet.TweetMessage)"></a>
 					    <!-- </div> -->
