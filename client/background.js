@@ -33,7 +33,7 @@ chrome.storage.sync.get("channel", function(item) {
 //============================================
 var oSocket;
 function setWebSocketClient() {
-    oSocket = new WebSocket("ws://bluemirr.kr:9090/ws");
+    oSocket = new WebSocket("ws://promptweet.prompt.co.kr:9090/ws");
     oSocket.onmessage = function (event) {
         var tweet = JSON.parse(event.data)
         if(checkFilterTweet(tweet)) {
@@ -44,7 +44,7 @@ function setWebSocketClient() {
             } else {
                 // chrome.browserAction.setBadgeBackgroundColor({color:[232,212,102,255]});
                 chrome.browserAction.setBadgeText({text:"N"});
-                makeNotification(Tweet);
+                makeNotification(tweet);
             }
         }
     };
@@ -165,7 +165,7 @@ function sendRemote(tweet) {
         {
         }
     }
-    xmlhttp.open("POST","http://bluemirr.kr:9090/putTweet",true);
+    xmlhttp.open("POST","http://promptweet.prompt.co.kr:9090/putTweet",true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.send(tweet);
 }

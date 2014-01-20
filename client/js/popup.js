@@ -27,7 +27,7 @@ function TestCtrl($scope, $http) {
 
 	// when page has loaded get Tweet from Server
   	function fetchTweet() {
-		$http({method: 'GET', url: "http://bluemirr.kr:9090/getTweet", params:{channel:$scope.channel}}).
+		$http({method: 'GET', url: "http://promptweet.prompt.co.kr:9090/getTweet", params:{channel:$scope.channel}}).
 	  		success(function(data, status, headers, config) {
 	  			for (var i = 0; data != "null" && data != null && i < data.length; i++) {
 		  			var temp = {};
@@ -50,7 +50,7 @@ function TestCtrl($scope, $http) {
   	// send Tweet to Server
   	function sendRemote(tweet) {
   		console.log(tweet)
-  		$http.post("http://bluemirr.kr:9090/putTweet", tweet).success(function(data, status, headers, config) {
+  		$http.post("http://promptweet.prompt.co.kr:9090/putTweet", tweet).success(function(data, status, headers, config) {
 	  		console.log(data);
 	  	});
   	}
