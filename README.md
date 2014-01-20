@@ -15,13 +15,13 @@ prompTweet
 
 ##기술 스택
 1. Server
-  1) Go (standalone)
+  - Go (standalone)
 2. Client
-  1) Chrome Extention
-  2) HTML5 Websocket
-  3) AngularJs
-  4) Jquery
+  - Chrome Extention
+  - HTML5 Websocket
+  - AngularJs
+  - Jquery
 3. Etc
-  1) Git
-  - GitHub src - <https://github.com/bluemirr5/prompTweet.git>
-  - GitHub Page - <http://bluemirr5.github.io/prompTweet/>
+  - Git
+    - GitHub Source - <https://github.com/bluemirr5/prompTweet.git>
+    - GitHub Page - <http://bluemirr5.github.io/prompTweet/>
