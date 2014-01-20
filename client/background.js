@@ -3,6 +3,7 @@
 //  OmniBox
 //
 //============================================
+var gchannel;
 chrome.omnibox.onInputChanged.addListener(
     function(text, suggest) {
         console.log('inputChanged: ' + text);
@@ -12,57 +13,92 @@ chrome.omnibox.onInputEntered.addListener(
     function(text) {
         alert(text);
         console.log('inputEntered: ' + text);
+        chrome.storage.sync.set({'channel': text}, function() {
+            gchannel = text;
+            console.log("saveChannel");
+        });
     }
 );
+chrome.storage.sync.get("channel", function(item) {
+    if(item.channel == undefined || item.channel == null) {
+        item.channel = "";  
+    }
+    gchannel = item.channel;
+});
 
 //============================================
 //
 //  Notify From WebSocket
 //
 //============================================
-var oSocket = new WebSocket("ws://bluemirr.kr:9090/ws");
-oSocket.onmessage = function (event) {
-    var popups = chrome.extension.getViews({type: "popup"});
-    console.log(popups.length);
-    console.log(event.data);
-    var tweet = JSON.parse(event.data)
-    if (popups.length != 0) {
-        var popup = popups[0];
-        popup.addHiddenMessage(tweet);
+var oSocket;
+function setWebSocketClient() {
+    oSocket = new WebSocket("ws://promptweet.prompt.co.kr:9090/ws");
+    oSocket.onmessage = function (event) {
+        var tweet = JSON.parse(event.data)
+        if(checkFilterTweet(tweet)) {
+            var popups = chrome.extension.getViews({type: "popup"});
+            if (popups.length != 0) {
+                var popup = popups[0];
+                popup.addHiddenMessage(tweet);
+            } else {
+                // chrome.browserAction.setBadgeBackgroundColor({color:[232,212,102,255]});
+                chrome.browserAction.setBadgeText({text:"N"});
+                makeNotification(tweet);
+            }
+        }
+    };
+    oSocket.onopen = function (e) {
+        console.log("Server Connected");
+    };
+    oSocket.onclose = function (e) {
+        console.log("Server Disconnected")
+        var r=confirm("PrompTweet Server is disconnected.\n Connect again?");
+        if(r) {
+            setWebSocketClient();
+        }
+    };
+} 
+setWebSocketClient();
+function checkFilterTweet(tweet) {
+    var ret = false;
+    var message = tweet.TweetMessage;
+    var firstStr = message.substring(0, 1);
+    var etcStr = message.substring(1, message.length);
+    var parsedMessage = etcStr.split("#");
+    if (firstStr == "#") {
+        if (parsedMessage.length == 2 && parsedMessage[0] == gchannel) {
+            ret = true;
+        }
     } else {
-        // chrome.browserAction.setBadgeBackgroundColor({color:[232,212,102,255]});
-        chrome.browserAction.setBadgeText({text:"N"});
-
-        chrome.notifications.clear("PrompTweet", function(cleared){
-            var tweetType = getTweetType(tweet.TweetMessage);
-            var notyType = "basic";
-            var callback = function(){};
-            if(tweetType == "I") {
-                notyType = "image"
-            }
-            var opt = {
-                type: notyType,
-                title: tweet.RandomId+" : "+tweet.RegisterDate,
-                message: tweet.TweetMessage,
-                iconUrl: "/icon.png"
-            }
-            if(tweetType == "I") {
-                opt.imageUrl = tweet.TweetMessage;
-            }
-            console.log(opt);
-            chrome.notifications.onClicked.addListener(function(notificationId){
-                chrome.notifications.clear("PrompTweet", function(b){});
-            });
-            chrome.notifications.create("PrompTweet", opt, callback);
-        });        
+        ret = true;
     }
-};
-oSocket.onopen = function (e) {
-    console.log("Server Connected");
-};
-oSocket.onclose = function (e) {
-    alert("Server Disconnected")
-};
+    return ret;
+}
+function makeNotification(tweet) {
+    chrome.notifications.clear("PrompTweet", function(cleared){
+        var tweetType = getTweetType(tweet.TweetMessage);
+        var notyType = "basic";
+        var callback = function(){};
+        if(tweetType == "I") {
+            notyType = "image"
+        }
+        var opt = {
+            type: notyType,
+            title: tweet.RandomId+" : "+tweet.RegisterDate,
+            message: tweet.TweetMessage,
+            iconUrl: "/icon.png"
+        }
+        if(tweetType == "I") {
+            opt.imageUrl = tweet.TweetMessage;
+        }
+        console.log(opt);
+        chrome.notifications.onClicked.addListener(function(notificationId){
+            chrome.notifications.clear("PrompTweet", function(b){});
+        });
+        chrome.notifications.create("PrompTweet", opt, callback);
+    });        
+}
 
 //============================================
 //
@@ -77,15 +113,29 @@ function createMenuItem(creationObject, onclickHandler) {
     }
     return chrome.contextMenus.create(creationObject);
 }
-createMenuItem({"title": "PrompTweet", "contexts":["selection", "image", "link"]}, contextAction);
-function contextAction(info, tab, creationData) {
+createMenuItem({"title": "Send Common Channel", "contexts":["selection", "image", "link"]}, contextCommonAction);
+createMenuItem({"title": "Send private Channel", "contexts":["selection", "image", "link"]}, contextPrivateAction);
+function contextCommonAction(info, tab, creationData) {
+    var message;
     if(info.selectionText != undefined && info.selectionText != null) {
-        send(info.selectionText);
+        message = info.selectionText;
     } else if(info.srcUrl != undefined && info.srcUrl != null) {
-        send(info.srcUrl);
+        message = info.srcUrl;
     } else if(info.linkUrl != undefined && info.linkUrl != null) {
-        send(info.linkUrl);
+        message = info.linkUrl;
     }
+    send(message);
+}
+function contextPrivateAction(info, tab, creationData) {
+    var message;
+    if(info.selectionText != undefined && info.selectionText != null) {
+        message = info.selectionText;
+    } else if(info.srcUrl != undefined && info.srcUrl != null) {
+        message = info.srcUrl;
+    } else if(info.linkUrl != undefined && info.linkUrl != null) {
+        message = info.linkUrl;
+    }
+    send("#"+gchannel+"#"+message);
 }
 
 //============================================
@@ -115,7 +165,7 @@ function sendRemote(tweet) {
         {
         }
     }
-    xmlhttp.open("POST","http://bluemirr.kr:9090/putTweet",true);
+    xmlhttp.open("POST","http://promptweet.prompt.co.kr:9090/putTweet",true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.send(tweet);
 }

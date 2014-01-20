@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -31,17 +32,37 @@ func putTweet(w http.ResponseWriter, r *http.Request) {
 }
 
 func getTweet(w http.ResponseWriter, r *http.Request) {
-	if len(tweetSetList) > 0 {
-		if len(tweetSetList) > 10 {
-			tweetList, _ := json.Marshal(tweetSetList[len(tweetSetList)-10 : len(tweetSetList)])
+	channel := r.FormValue("channel")
+	retTweetList := getTargetTweet(channel)
+	if len(retTweetList) > 0 {
+		if len(retTweetList) > 10 {
+			tweetList, _ := json.Marshal(retTweetList[len(retTweetList)-10 : len(retTweetList)])
 			w.Write(tweetList)
 		} else {
-			tweetList, _ := json.Marshal(tweetSetList)
+			tweetList, _ := json.Marshal(retTweetList)
 			w.Write(tweetList)
 		}
 	} else {
 		return
 	}
+}
+
+func getTargetTweet(channel string) []*tweetSet {
+	var retTweetList []*tweetSet
+	for _, tweet := range tweetSetList {
+		message := tweet.TweetMessage
+		firstStr := subStr(message, 0, 1)
+		etcStr := subStr(message, 1, len(message)-1)
+		parsedMessage := strings.Split(etcStr, "#")
+		if firstStr == "#" {
+			if len(parsedMessage) == 2 && parsedMessage[0] == channel {
+				retTweetList = append(retTweetList, tweet)
+			}
+		} else {
+			retTweetList = append(retTweetList, tweet)
+		}
+	}
+	return retTweetList
 }
 
 func byteToString(c []byte) string {
@@ -53,4 +74,13 @@ func byteToString(c []byte) string {
 		n = i
 	}
 	return string(c[:n+1])
+}
+
+func subStr(s string, pos, length int) string {
+	runes := []rune(s)
+	l := pos + length
+	if l > len(runes) {
+		l = len(runes)
+	}
+	return string(runes[pos:l])
 }

@@ -16,10 +16,19 @@ function rand(start, end) {
 function TestCtrl($scope, $http) {
 	$scope.tweetList = [];
 
+	// get Channel & 
+	chrome.storage.sync.get("channel", function(item) {
+		if(item.channel == undefined || item.channel == null) {
+			item.channel = "";	
+		}
+		$scope.channel = item.channel;
+		fetchTweet();
+	});
+
+	// when page has loaded get Tweet from Server
   	function fetchTweet() {
-		$http({method: 'GET', url: "http://bluemirr.kr:9090/getTweet"}).
+		$http({method: 'GET', url: "http://promptweet.prompt.co.kr:9090/getTweet", params:{channel:$scope.channel}}).
 	  		success(function(data, status, headers, config) {
-		  		//console.log(data);
 	  			for (var i = 0; data != "null" && data != null && i < data.length; i++) {
 		  			var temp = {};
 		  			temp.RandomId = data[i].RandomId;
@@ -28,7 +37,8 @@ function TestCtrl($scope, $http) {
 		  			temp.RegisterDate = data[i].RegisterDate;
 		  			// console.log(temp);
 		  			// filter
-					temp = $scope.tweetFilter(temp);
+		  			temp = channelFilterTweet(temp)
+					temp = tweetTypeFilter(temp);
 	  				$scope.tweetList.unshift(temp);
 	  			};
 	  	}).
@@ -37,13 +47,15 @@ function TestCtrl($scope, $http) {
 	  	});
   	}
 
+  	// send Tweet to Server
   	function sendRemote(tweet) {
   		console.log(tweet)
-  		$http.post("http://bluemirr.kr:9090/putTweet", tweet).success(function(data, status, headers, config) {
+  		$http.post("http://promptweet.prompt.co.kr:9090/putTweet", tweet).success(function(data, status, headers, config) {
 	  		console.log(data);
 	  	});
   	}
 
+  	// make Tweet for sending Server
 	$scope.send = function() {
 		var message = $scope.message;
 		if(message == null || message == "") {
@@ -57,17 +69,20 @@ function TestCtrl($scope, $http) {
 		$scope.message = "";
 	}
 	
-	fetchTweet();
+	// when client recieve Tweet, add and display Tweet
 	$scope.addTweet = function(tweet) {
+		console.log(tweet);
+		tweet = channelFilterTweet(tweet)
 		// filter
-		tweet = $scope.tweetFilter(tweet);
+		tweet = tweetTypeFilter(tweet);
 
 		$scope.tweetList.unshift(tweet);
 		$scope.$apply();
 		chrome.browserAction.setBadgeText({text:""});
 	};
 
-	$scope.tweetFilter = function(tweet) {
+	// classify Tweet Type : Text, Image, Link
+	function tweetTypeFilter(tweet) {
 		tweet.Type = "T";
 		var message = tweet.TweetMessage;
 		var header1 = message.substring(0,7).toLowerCase();
@@ -87,18 +102,43 @@ function TestCtrl($scope, $http) {
 		return tweet;
 	};
 
+	// goto link
 	$scope.link = function(purl) {
 		chrome.tabs.create( { url: purl} );
 	};
 
+	// view operation
 	$('#messagebox').keypress(function(e){
 		if(e.keyCode == 13){
 			$scope.send();
 		}
 	});
 
+	function channelFilterTweet(tweet) {
+	    var channel = null;
+	    var message = tweet.TweetMessage;
+	    var firstStr = message.substring(0, 1);
+	    var etcStr = message.substring(1, message.length);
+	    var parsedMessage = etcStr.split("#");
+	    if (firstStr == "#") {
+	        if (parsedMessage.length == 2 && parsedMessage[0] == $scope.channel) {
+	            tweet.TweetMessage = parsedMessage[1];
+	            channel = $scope.channel;
+	        }
+	    } else {
+	        channel = "Common";
+	    }
+	    if(channel != null) {
+	        tweet.Channel = channel
+	        return tweet;
+	    } else {
+	        return null;
+	    }
+	}
+
 }
 
+// call from background.js
 function addHiddenMessage(obj) {
 	console.log("addHiddenMessage")
 	angular.element(document.getElementById("body")).scope().addTweet(obj);
