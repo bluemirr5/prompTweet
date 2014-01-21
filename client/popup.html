@@ -10,7 +10,7 @@
 		<style>
 
 	    body {
-	      min-width:453px;
+	      min-width:443px;
 	      min-height:523px;
 	      overflow-x:hidden;
 	    }
@@ -80,7 +80,7 @@
 		 .div_content{
 		 	margin-top: 20px;
 		 	margin-left: 5px;
-		 	width: 417px;
+		 	width: 412px;
 		 	word-wrap: break-word;
 
 		 }
@@ -202,7 +202,7 @@
 		      		<div>
 				        <span class="id" ng-bind="tweet.RandomId"></span>
 				        <span class="date" ng-bind="tweet.RegisterDate"></span>
-				        <span class="date" ng-bind="tweet.Channel"></span>
+				        <img class="date" src="/img/channelImage.png" ng-if="tweet.Channel!='Common'"></img>
 				        <!-- <div ng-switch-on="tweet.Type"> -->
 					    <span class="content" ng-if="tweet.Type=='T'" ng-bind="tweet.TweetMessage"></span>
 					    <img class="content" ng-if="tweet.Type=='I'" ng-src="{{tweet.TweetMessage}}"></img>
